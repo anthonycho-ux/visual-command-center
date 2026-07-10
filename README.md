@@ -19,6 +19,9 @@ Reading terminal text all day is tiring.
 A builder needs a cockpit.
 
 This is the start of that cockpit.
+## See the design
+
+Open `design.html` for the visual map.
 
 ## Try it
 

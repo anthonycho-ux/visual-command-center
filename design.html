@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Visual Command Center design</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080b12;
+      --panel: #111827;
+      --panel2: #151f32;
+      --line: #6d5dfc;
+      --text: #f2f5ff;
+      --muted: #9aa5bd;
+      --green: #55d68b;
+      --yellow: #ffd166;
+      --blue: #70c7ff;
+      --pink: #ff7ab6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, rgba(109, 93, 252, 0.22), transparent 34rem), var(--bg);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      padding: 42px;
+    }
+    main {
+      width: min(1180px, 100%);
+    }
+    header {
+      margin-bottom: 26px;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(34px, 5vw, 72px);
+      letter-spacing: -0.06em;
+      line-height: 0.92;
+    }
+    .subtitle {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: clamp(18px, 2vw, 25px);
+      max-width: 760px;
+    }
+    .pill {
+      flex: 0 0 auto;
+      padding: 12px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      color: var(--green);
+      background: rgba(85, 214, 139, 0.08);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-size: 13px;
+    }
+    .board {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 18px;
+    }
+    .card {
+      min-height: 180px;
+      border-radius: 28px;
+      padding: 24px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03));
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 26px 80px rgba(0, 0, 0, 0.35);
+      position: relative;
+      overflow: hidden;
+    }
+    .card strong {
+      display: block;
+      font-size: 26px;
+      letter-spacing: -0.04em;
+      margin-bottom: 12px;
+    }
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 19px;
+      line-height: 1.35;
+    }
+    .card::after {
+      content: "";
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      right: -40px;
+      bottom: -40px;
+      background: var(--accent);
+      opacity: 0.16;
+      filter: blur(2px);
+    }
+    .brain { --accent: var(--blue); grid-column: 1; }
+    .feed { --accent: var(--line); grid-column: 2; grid-row: 1 / span 2; display: grid; align-content: center; min-height: 378px; }
+    .memory { --accent: var(--yellow); grid-column: 3; }
+    .session { --accent: var(--green); grid-column: 1; }
+    .os { --accent: var(--pink); grid-column: 1; }
+    .browser { --accent: var(--blue); grid-column: 3; }
+    .mac { --accent: var(--green); grid-column: 3; }
+    .feed strong { font-size: 38px; }
+    .feed p { font-size: 22px; color: #cad2e5; }
+    .arrow {
+      position: absolute;
+      color: var(--line);
+      font-size: 44px;
+      font-weight: 900;
+      text-shadow: 0 0 24px rgba(109, 93, 252, 0.6);
+      pointer-events: none;
+    }
+    .a1 { left: 31%; top: 100px; }
+    .a2 { right: 31%; top: 100px; transform: rotate(180deg); }
+    .a3 { left: 31%; top: 300px; }
+    .a4 { right: 31%; top: 300px; transform: rotate(180deg); }
+    .a5 { left: 31%; bottom: 112px; }
+    .a6 { right: 31%; bottom: 112px; transform: rotate(180deg); }
+    .bottom {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    .note {
+      border-radius: 24px;
+      padding: 22px 24px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #cbd5e1;
+      font-size: 20px;
+      line-height: 1.35;
+    }
+    .note b { color: var(--text); }
+    @media (max-width: 920px) {
+      body { padding: 22px; }
+      header { display: block; }
+      .pill { display: inline-block; margin-top: 18px; }
+      .board, .bottom { grid-template-columns: 1fr; }
+      .card, .feed, .brain, .memory, .session, .os, .browser, .mac { grid-column: auto; grid-row: auto; min-height: 150px; }
+      .arrow { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Visual Command Center design.</h1>
+        <p class="subtitle">One agent brain. One shared feed. Two kinds of heartbeat. Many simple screens.</p>
+      </div>
+      <div class="pill">Terminal is not the product.</div>
+    </header>
+
+    <section class="board" aria-label="Visual Command Center design map">
+      <article class="card brain">
+        <strong>GJC session.</strong>
+        <p>The live agent thinks, checks work, and writes short signals.</p>
+      </article>
+
+      <article class="card feed">
+        <strong>Visual feed.</strong>
+        <p>This is the shared stream. Agents write here. Screens read here. You do not bridge memory by hand.</p>
+      </article>
+
+      <article class="card memory">
+        <strong>UAC memory.</strong>
+        <p>Your preferences and product direction stay here for every agent.</p>
+      </article>
+
+      <article class="card session">
+        <strong>Session heartbeat.</strong>
+        <p>Runs inside this GJC chat. Good for active coaching while the session is alive.</p>
+      </article>
+
+      <article class="card browser">
+        <strong>Browser board.</strong>
+        <p>A big visual surface for messages, launches, marketing, and daily focus.</p>
+      </article>
+
+      <article class="card os">
+        <strong>macOS heartbeat.</strong>
+        <p>Installed in launchd. It sleeps, wakes at the set time, sends the reminder, then stops.</p>
+      </article>
+
+      <article class="card mac">
+        <strong>Mac window.</strong>
+        <p>A small floating control panel that stays visible while you build.</p>
+      </article>
+
+      <div class="arrow a1">→</div>
+      <div class="arrow a2">→</div>
+      <div class="arrow a3">→</div>
+      <div class="arrow a4">→</div>
+      <div class="arrow a5">→</div>
+      <div class="arrow a6">→</div>
+    </section>
+
+    <section class="bottom" aria-label="Plain meaning">
+      <div class="note"><b>What is running now.</b> The GJC session schedule is active in this chat. The macOS heartbeat is installed, but it is not always running.</div>
+      <div class="note"><b>What this becomes.</b> You see the agent through a visual cockpit, not a wall of terminal text.</div>
+    </section>
+  </main>
+</body>
+</html>
