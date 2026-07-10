@@ -35,26 +35,34 @@ final class FeedReader {
     }
 }
 
-final class CommandCenterWindow: NSWindow {
+final class CommandCenterWindow: NSPanel {
+    override var canBecomeKey: Bool { true }
+    override var canBecomeMain: Bool { true }
     init() {
-        let screenFrame = NSScreen.main?.visibleFrame ?? NSRect(x: 80, y: 80, width: 1200, height: 800)
+        let screenFrame = NSScreen.screens
+            .map(\.visibleFrame)
+            .max { left, right in
+                left.width * left.height < right.width * right.height
+            } ?? NSRect(x: 80, y: 80, width: 1200, height: 800)
         let size = NSSize(width: 460, height: 280)
         let origin = NSPoint(
-            x: screenFrame.maxX - size.width - 28,
-            y: screenFrame.maxY - size.height - 28
+            x: screenFrame.minX + 40,
+            y: screenFrame.minY + 40
         )
 
         super.init(
             contentRect: NSRect(origin: origin, size: size),
-            styleMask: [.titled, .closable, .resizable, .miniaturizable],
+            styleMask: [.titled, .closable, .resizable, .miniaturizable, .nonactivatingPanel],
             backing: .buffered,
             defer: false
         )
 
         title = "Visual Command Center"
-        level = .floating
+        level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.maximumWindow)))
+        isFloatingPanel = true
+        hidesOnDeactivate = false
         isReleasedWhenClosed = false
-        collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
+        collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .moveToActiveSpace, .transient]
         backgroundColor = .clear
         minSize = NSSize(width: 360, height: 220)
     }
@@ -71,7 +79,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var lastText = ""
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        NSApp.setActivationPolicy(.accessory)
+        NSApp.setActivationPolicy(.regular)
         buildWindow()
         updateMessage()
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
@@ -108,7 +116,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         messageLabel.maximumNumberOfLines = 6
         messageLabel.lineBreakMode = .byWordWrapping
 
-        let openButton = NSButton(title: "Open board", target: self, action: #selector(openBoard))
+        let openButton = NSButton(title: "Open feed", target: self, action: #selector(openFeedFolder))
         openButton.bezelStyle = .rounded
 
         let refreshButton = NSButton(title: "Refresh", target: self, action: #selector(refreshNow))
@@ -148,11 +156,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         ])
 
         window.makeKeyAndOrderFront(nil)
+        window.orderFrontRegardless()
         NSApp.activate(ignoringOtherApps: true)
     }
 
-    @objc private func openBoard() {
-        NSWorkspace.shared.open(URL(string: "http://127.0.0.1:8790")!)
+    @objc private func openFeedFolder() {
+        let directory = FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent(".gjc")
+            .appendingPathComponent("visual-feed")
+        try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        NSWorkspace.shared.open(directory)
     }
 
     @objc private func refreshNow() {
@@ -181,4 +194,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 let app = NSApplication.shared
 let delegate = AppDelegate()
 app.delegate = delegate
-app.run()
+withExtendedLifetime(delegate) {
+    app.run()
+}

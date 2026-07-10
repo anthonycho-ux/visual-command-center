@@ -6,9 +6,9 @@ Visual Command Center turns agent output into a small Mac window you can keep on
 
 It starts simple.
 
-One browser board.
+One standalone Mac app.
 
-One Mac widget style window.
+One optional browser board.
 
 One shared feed at `~/.gjc/visual-feed/messages.jsonl`.
 
@@ -25,10 +25,16 @@ Open `design.html` for the visual map.
 
 ## Try it
 
-Start the browser board.
+Build and install the standalone app.
 
 ```sh
-gjc-display
+bin/install-app
+```
+
+Open it from your Applications folder.
+
+```sh
+open "$HOME/Applications/Visual Command Center.app"
 ```
 
 Send a message into it.
@@ -37,13 +43,10 @@ Send a message into it.
 echo "Ship one thing today." | gjc-display show
 ```
 
-Start the Mac window.
+The app reads the same feed and shows the latest agent message.
 
-```sh
-bin/visual-command-center
-```
-
-The window reads the same feed and shows the latest agent message.
+The browser board is optional.
+With Stage Manager, macOS may place it in the left strip. Click the Visual Command Center card there.
 
 ## Direction
 

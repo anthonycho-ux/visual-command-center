@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+APP_PATH="$($ROOT/bin/build-app)"
+INSTALL_DIR="$HOME/Applications"
+TARGET="$INSTALL_DIR/Visual Command Center.app"
+
+mkdir -p "$INSTALL_DIR"
+rm -rf "$TARGET"
+cp -R "$APP_PATH" "$TARGET"
+
+echo "$TARGET"
